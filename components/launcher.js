@@ -4,14 +4,28 @@ const path = require('path');
 const downloader = require('./downloader');
 const { v4: uuidv4 } = require('uuid');
 
+/**
+ * Clase que representa un lanzador de Minecraft.
+ */
 class Launcher {
 
+    /**
+   * Crea un perfil si no existe el archivo `launcher_profiles.json` en la ruta especificada.
+   * @param {string} root - La ruta raíz donde se buscará o creará el archivo.
+   */
   createProfile(root) {
     if(!fs.existsSync(path.join(root, 'launcher_profiles.json'))) {
       fs.writeFileSync(path.resolve(path.join(root, 'launcher_profiles.json')), JSON.stringify({ profiles: {}  }));
     }
   }
 
+  /**
+   * Encuentra archivos JAR en un directorio y subdirectorios.
+   * @param {string} directorio - El directorio donde se realizará la búsqueda.
+   * @param {Array<string>} files - Lista de nombres de archivos a buscar.
+   * @param {string} ver - La versión de Minecraft para la que se están buscando los archivos JAR.
+   * @returns {string} - Una cadena con las rutas de los archivos JAR encontrados, separados por ';'.
+   */
   encontrarArchivosJAR(directorio, files, ver) {
     const archivos = fs.readdirSync(directorio);
     let archivosJARString = '';
@@ -38,6 +52,12 @@ class Launcher {
     return archivosJARString;
   }
 
+  /**
+   * Autentica a un usuario utilizando el archivo `usercache.json` en la ruta especificada.
+   * @param {string} root - La ruta raíz donde se encuentra el archivo `usercache.json`.
+   * @param {string} us - El nombre de usuario a autenticar.
+   * @returns {string} - El UUID del usuario autenticado.
+   */
   auth(root, us) {
     try {
       const fil = JSON.parse(fs.readFileSync(path.join(root, 'usercache.json'), { encoding: 'utf-8'}))
@@ -48,6 +68,14 @@ class Launcher {
     }
   }
 
+  /**
+   * Lanza el juego de Minecraft con las opciones especificadas.
+   * @param {Object} options - Las opciones de configuración para lanzar el juego.
+   * @param {Object} options.memory - Opciones de memoria (min y max).
+   * @param {string} options.gameDirectory - El directorio principal del juego.
+   * @param {string} options.version - La versión de Minecraft a lanzar.
+   * @param {string} options.username - El nombre de usuario del jugador.
+   */
   launch(options) {
     
     this.downloader = new downloader(this);
